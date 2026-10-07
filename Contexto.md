@@ -133,15 +133,17 @@ Totalmente implementado em pasta separada `frontend/`:
    - Formatação de preços em moeda brasileira (Intl BRL) -> **Aprovado**.
    - Carregamento de imagens com política `referrerpolicy="no-referrer"` para desviar de bloqueios de CDN -> **Aprovado**.
    - Fallback de imagens com SVG de smartphone Samsung Galaxy com gradiente e logo -> **Aprovado**.
-   - Responsividade em mobile e desktop -> **Aprovado**.
+5. **Testes Reais em Produção na Vercel (`https://s-silk-psi.vercel.app`)**:
+   - `GET /` -> Status 200 OK (Mensagem de boas-vindas da API) -> **Aprovado**.
+   - `GET /api` -> Status 200 OK (`"API de aparelhos Samsung funcionando."`) -> **Aprovado**.
+   - `GET /api/aparelhos` -> Status 200 OK (Retornando os 3 aparelhos cadastrados no MongoDB Atlas: Galaxy S24, Galaxy S24 Ultra e Galaxy A55) -> **Aprovado**.
 
 ## Deploy
 
-- Backend configurado para a Vercel através do arquivo `backend/vercel.json` e do arquivo `backend/api/index.js`.
-- O cache de conexão com Mongoose foi implementado para evitar conexões repetidas em ambiente serverless.
-- Publicação em produção pendente de credenciais do usuário na plataforma da Vercel.
+- **URL de Produção da API na Vercel:** `https://s-silk-psi.vercel.app`
+- Backend publicado e operando como Serverless Function com integração ao MongoDB Atlas via variável de ambiente `MONGODB_URI`.
+- O frontend está configurado com `const API_URL = "https://s-silk-psi.vercel.app";` para consumir diretamente a API em nuvem.
 
 ## Pendências
 
-- [ ] Executar o deploy no ambiente do usuário via Vercel CLI ou integração GitHub/Vercel informando a string do MongoDB Atlas.
-- [ ] Testar os endpoints na URL real de produção gerada pela Vercel após o deploy.
+- Nenhuma pendência. O projeto está 100% desenvolvido, testado e publicado com sucesso na Vercel e conectado ao MongoDB Atlas.

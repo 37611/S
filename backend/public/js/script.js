@@ -7,7 +7,7 @@
 // 1. CONFIGURAÇÃO DA API
 // ==========================================================================
 // Centralização da URL da API conforme especificado no item 12
-const API_URL = "https://s-silk-psi.vercel.app";
+const API_URL = window.location.origin.includes('http') ? window.location.origin : "https://s-silk-psi.vercel.app";
 
 // Imagem padrão caso a URL do aparelho seja inválida ou falhe ao carregar
 const PLACEHOLDER_IMG = "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20280%22%20width%3D%22200%22%20height%3D%22280%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%231e293b%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%230f172a%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22screen%22%20x1%3D%220%25%22%20y1%3D%220%25%22%20x2%3D%22100%25%22%20y2%3D%22100%25%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%230284c7%22%2F%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23034ea2%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20x%3D%2230%22%20y%3D%2210%22%20width%3D%22140%22%20height%3D%22260%22%20rx%3D%2222%22%20fill%3D%22url(%23bg)%22%20stroke%3D%22%23475569%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%2238%22%20y%3D%2220%22%20width%3D%22124%22%20height%3D%22240%22%20rx%3D%2216%22%20fill%3D%22url(%23screen)%22%2F%3E%3Ccircle%20cx%3D%22100%22%20cy%3D%2232%22%20r%3D%224%22%20fill%3D%22%230f172a%22%2F%3E%3Ctext%20x%3D%22100%22%20y%3D%22135%22%20fill%3D%22%23ffffff%22%20font-family%3D%22system-ui%2C%20sans-serif%22%20font-size%3D%2213%22%20font-weight%3D%22800%22%20letter-spacing%3D%222%22%20text-anchor%3D%22middle%22%3ESAMSUNG%3C%2Ftext%3E%3Ctext%20x%3D%22100%22%20y%3D%22155%22%20fill%3D%22%23bae6fd%22%20font-family%3D%22system-ui%2C%20sans-serif%22%20font-size%3D%2210%22%20font-weight%3D%22600%22%20letter-spacing%3D%221%22%20text-anchor%3D%22middle%22%3EGALAXY%3C%2Ftext%3E%3Crect%20x%3D%2280%22%20y%3D%22248%22%20width%3D%2240%22%20height%3D%223%22%20rx%3D%221.5%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.7%22%2F%3E%3C%2Fsvg%3E";
@@ -171,7 +171,6 @@ async function buscarAparelhoPorId(id) {
 async function salvarAparelho(evento) {
   evento.preventDefault();
 
-  // Limpa mensagens de erro anteriores
   limparErrosFormulario();
 
   const id = formId.value.trim();
@@ -179,7 +178,6 @@ async function salvarAparelho(evento) {
   const preco = parseFloat(formPreco.value);
   const foto = formFoto.value.trim();
 
-  // Validação simples no cliente antes do envio
   let valido = true;
 
   if (!modelo) {
@@ -327,7 +325,6 @@ function renderizarAparelhos(lista) {
       </div>
     `;
 
-    // Eventos dos botões do card
     const btnEditar = card.querySelector(".btn-editar");
     btnEditar.addEventListener("click", () => abrirModalEdicao(aparelhoId));
 
@@ -422,12 +419,10 @@ function atualizarPreviewImagem(url) {
 // 8. EVENT LISTENERS E INICIALIZAÇÃO
 // ==========================================================================
 
-// Atualiza preview em tempo real ao digitar a URL da imagem
 formFoto.addEventListener("input", (e) => {
   atualizarPreviewImagem(e.target.value.trim());
 });
 
-// Busca em tempo real por modelo
 inputBusca.addEventListener("input", (e) => {
   const termo = e.target.value.toLowerCase().trim();
   const filtrados = aparelhos.filter((item) =>
@@ -436,7 +431,6 @@ inputBusca.addEventListener("input", (e) => {
   renderizarAparelhos(filtrados);
 });
 
-// Presets de teste rápido
 document.querySelectorAll(".btn-preset").forEach((btn) => {
   btn.addEventListener("click", () => {
     formModelo.value = btn.getAttribute("data-modelo");
@@ -446,7 +440,6 @@ document.querySelectorAll(".btn-preset").forEach((btn) => {
   });
 });
 
-// Abertura e fechamento de modais
 btnNovoAparelho.addEventListener("click", abrirModalCadastro);
 btnEmptyCadastrar.addEventListener("click", abrirModalCadastro);
 btnFecharModal.addEventListener("click", fecharModalForm);
@@ -456,19 +449,14 @@ btnFecharDelete.addEventListener("click", fecharModalDelete);
 btnCancelarDelete.addEventListener("click", fecharModalDelete);
 btnConfirmarDelete.addEventListener("click", confirmarExclusaoAparelho);
 
-// Fechar modal ao clicar fora da janela de conteúdo
 window.addEventListener("click", (e) => {
   if (e.target === modalForm) fecharModalForm();
   if (e.target === modalDelete) fecharModalDelete();
 });
 
-// Submissão do formulário
 formAparelho.addEventListener("submit", salvarAparelho);
-
-// Botão tentar novamente em caso de erro
 btnTentarNovamente.addEventListener("click", carregarAparelhos);
 
-// Carregamento inicial ao carregar a página
 document.addEventListener("DOMContentLoaded", () => {
   carregarAparelhos();
 });

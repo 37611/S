@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciamento de Aparelhos Samsung</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Barra de Notificações / Toast -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Cabeçalho Principal -->
+  <header class="header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-logo">SAMSUNG</div>
+        <span class="brand-badge">Dispositivos</span>
+      </div>
+      <div class="header-actions">
+        <button id="btn-novo-aparelho" class="btn btn-primary">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Novo Aparelho
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="main-container">
+    
+    <!-- Barra de Ferramentas / Filtros -->
+    <section class="toolbar">
+      <div class="search-box">
+        <svg class="icon search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input 
+          type="text" 
+          id="input-busca" 
+          placeholder="Buscar aparelho por modelo..." 
+          autocomplete="off"
+        >
+      </div>
+      <div class="stats-info">
+        <span id="contador-aparelhos">0 aparelhos cadastrados</span>
+      </div>
+    </section>
+
+    <!-- Estado: Carregando -->
+    <div id="loading-state" class="state-container hidden">
+      <div class="spinner"></div>
+      <p class="state-text">Carregando aparelhos Samsung...</p>
+    </div>
+
+    <!-- Estado: Erro de Conexão -->
+    <div id="error-state" class="state-container hidden">
+      <div class="state-icon error-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h2 class="state-title">Não foi possível carregar os aparelhos.</h2>
+      <p id="error-message-text" class="state-description">Tente novamente mais tarde ou verifique se a API está em execução.</p>
+      <button id="btn-tentar-novamente" class="btn btn-secondary">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="1 4 1 10 7 10"></polyline>
+          <polyline points="23 20 23 14 17 14"></polyline>
+          <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+        </svg>
+        Tentar novamente
+      </button>
+    </div>
+
+    <!-- Estado: Lista Vazia -->
+    <div id="empty-state" class="state-container hidden">
+      <div class="state-icon empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+          <line x1="12" y1="18" x2="12.01" y2="18"></line>
+        </svg>
+      </div>
+      <h2 class="state-title">Nenhum aparelho cadastrado</h2>
+      <p class="state-description">Cadastre o primeiro aparelho Samsung para visualizá-lo nesta lista.</p>
+      <button id="btn-empty-cadastrar" class="btn btn-primary">
+        Cadastrar Aparelho
+      </button>
+    </div>
+
+    <!-- Grade de Aparelhos -->
+    <section id="grid-container" class="aparelhos-grid" aria-label="Lista de Aparelhos Samsung"></section>
+  </main>
+
+  <!-- Modal de Formulário (Cadastro / Edição) -->
+  <div id="modal-form" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title" class="modal-title">Cadastrar Aparelho Samsung</h2>
+        <button id="btn-fechar-modal" class="btn-close" aria-label="Fechar">&times;</button>
+      </div>
+      
+      <form id="form-aparelho" novalidate>
+        <input type="hidden" id="form-id">
+
+        <!-- Marca (fixa Samsung) -->
+        <div class="form-group">
+          <label for="form-marca">Marca</label>
+          <input 
+            type="text" 
+            id="form-marca" 
+            value="Samsung" 
+            readonly 
+            class="input-readonly" 
+            tabindex="-1"
+          >
+          <small class="form-hint">O sistema é exclusivo para aparelhos da marca Samsung.</small>
+        </div>
+
+        <!-- Modelo -->
+        <div class="form-group">
+          <label for="form-modelo">Modelo <span class="required">*</span></label>
+          <input 
+            type="text" 
+            id="form-modelo" 
+            placeholder="Ex: Galaxy S24 Ultra" 
+            required 
+            maxlength="100"
+          >
+          <span class="field-error" id="error-modelo"></span>
+        </div>
+
+        <!-- Preço -->
+        <div class="form-group">
+          <label for="form-preco">Preço (R$) <span class="required">*</span></label>
+          <input 
+            type="number" 
+            id="form-preco" 
+            step="0.01" 
+            min="0.01" 
+            placeholder="Ex: 3999.90" 
+            required
+          >
+          <span class="field-error" id="error-preco"></span>
+        </div>
+
+        <!-- URL da Foto -->
+        <div class="form-group">
+          <label for="form-foto">URL da Foto <span class="required">*</span></label>
+          <input 
+            type="url" 
+            id="form-foto" 
+            placeholder="https://exemplo.com/galaxy-s24.jpg" 
+            required
+          >
+          <span class="field-error" id="error-foto"></span>
+        </div>
+
+        <!-- Pré-visualização da Imagem -->
+        <div class="image-preview-wrapper">
+          <span class="preview-label">Pré-visualização da imagem:</span>
+          <div class="preview-box">
+            <img id="img-preview" src="" alt="Pré-visualização" class="hidden" referrerpolicy="no-referrer">
+            <div id="preview-placeholder" class="preview-placeholder">
+              <span>Nenhuma imagem informada</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botões de Preenchimento Rápido (Dados de Teste) -->
+        <div class="presets-section">
+          <span class="presets-label">Exemplos rápidos de teste:</span>
+          <div class="presets-buttons">
+            <button type="button" class="btn-preset" data-modelo="Galaxy S24" data-preco="3999.90" data-foto="https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=500&auto=format&fit=crop&q=80">
+              Galaxy S24
+            </button>
+            <button type="button" class="btn-preset" data-modelo="Galaxy A55" data-preco="2199.90" data-foto="https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500&auto=format&fit=crop&q=80">
+              Galaxy A55
+            </button>
+            <button type="button" class="btn-preset" data-modelo="Galaxy S24 Ultra" data-preco="6499.90" data-foto="https://images.unsplash.com/photo-1580910051074-3eb694886505?w=500&auto=format&fit=crop&q=80">
+              Galaxy S24 Ultra
+            </button>
+          </div>
+        </div>
+
+        <!-- Ações do Modal -->
+        <div class="modal-actions">
+          <button type="button" id="btn-cancelar-modal" class="btn btn-secondary">Cancelar</button>
+          <button type="submit" id="btn-salvar-modal" class="btn btn-primary">
+            Salvar Aparelho
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmação de Exclusão -->
+  <div id="modal-delete" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="delete-title">
+    <div class="modal-content modal-content-sm">
+      <div class="modal-header">
+        <h2 id="delete-title" class="modal-title">Confirmar Exclusão</h2>
+        <button id="btn-fechar-delete" class="btn-close" aria-label="Fechar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Tem certeza de que deseja excluir o aparelho <strong id="delete-aparelho-nome"></strong>?</p>
+        <p class="modal-warning">Esta ação é irreversível.</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="btn-cancelar-delete" class="btn btn-secondary">Cancelar</button>
+        <button type="button" id="btn-confirmar-delete" class="btn btn-danger">Excluir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rodapé -->
+  <footer class="footer">
+    <p>Mini Sistema de Gerenciamento de Aparelhos Samsung &bull; Node.js, Express, MongoDB &amp; Vanilla JS</p>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

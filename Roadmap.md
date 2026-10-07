@@ -46,8 +46,8 @@
 ## 6. Deploy
 - [x] Configurar Vercel
 - [x] Configurar variáveis de ambiente
-- [ ] Publicar API (requer credenciais da conta Vercel do usuário)
-- [ ] Testar API em produção (após publicação)
+- [x] Publicar API (Publicada em: https://s-silk-psi.vercel.app)
+- [x] Testar API em produção
 
 ## 7. Documentação
 - [x] Atualizar Contexto.md

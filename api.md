@@ -7,6 +7,7 @@ Esta é a documentação oficial da API REST desenvolvida em Node.js e Express p
 ## 1. Informações Gerais
 
 - **URL Base Local:** `http://localhost:3000`
+- **URL Base Produção (Vercel):** `https://s-silk-psi.vercel.app`
 - **Prefixo dos Endpoints:** `/api`
 - **Formato dos Dados:** `application/json`
 - **Autenticação:** Não requerida nesta versão

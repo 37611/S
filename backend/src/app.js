@@ -15,17 +15,20 @@ app.use(
   })
 );
 
+const path = require('path');
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Servir arquivos estáticos do frontend (HTML, CSS, JS)
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Rotas da API montadas em /api
 app.use('/api', aparelhoRoutes);
 
-// Rota raiz para conveniência ou verificação de status
+// Rota raiz entrega o frontend (index.html)
 app.get('/', (req, res) => {
-  res.status(200).json({
-    mensagem: 'Bem-vindo à API Samsung. Acesse /api para status ou /api/aparelhos para os recursos.',
-  });
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 // Middleware para rotas não encontradas (404)
